@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 #include <cstdlib>
 #include <ctime>
 
@@ -20,10 +19,23 @@ map<string, pair<string, string>> reasons_why = {
 // Sitios para explorar
 map<string, pair<string, string>> explore_site = {
     {"Zona desierta", {"Menos mal que tienes un refugio", "Desgraciadamente no tienes un refugio"}},
-    {"Cueva", {"Wow esta cueva está llena de comida", "Genial me he cansado para nada"}},
-    {"Montaña", {"Wow esta montaña tiene mucha bebida extraña", "Genial me he cansado para nada"}},
-    {"Volcán", {"Nada bueno puede salir de esto", "Genial me he cansado para nada"}},
-    {"Casa pirata", {"¡Ohh, qué sorpresa! Un invitado no invitado...\n  Ahora dime, ¿vienes a robarme, a matarme o—espera—acaso traes ron?\n Porque si no traes ron, amigo mío, tenemos un problema... un problema grande. 🍻🏴‍☠️", "¡Vaya, vaya! Si es que los buenos piratas no necesitan invitación... Espero que hayas traído ron, porque si no, tendré que considerar seriamente si seguir dejándote con vida... ¡Ja! ¡Es broma! (O tal vez no...) 🍻🏴‍☠️"}},
+    {"Cueva", {"Encontrasete frutos del bosque, y pasaras la noche en la cueva, te alimentaste y recuperaste vida", "No encontraste nada util en la cueva, pasaras la noche en la cueva y obtubiste un refugio improvisado, no necesitas construir uno"}},
+    {"Montaña", {"Encontraste bebida extraña, y pasaras la noche en la bodega, te alimentaste y recuperaste vida", "Genial me he cansado para nada"}},
+    {"Volcán", {"Te encontraste a los habitantes de los volcanes, te alojan en sus casas y te dan todo lo necesario para sobrevivir todos los dias", "Te encontraste a los habitantes de los volcanes, parece ser que les das mala espina, asique te asesinan"}},
+    {"Casa pirata", {"¡Ohh, qué sorpresa! Un invitado no invitado...\n  Ahora dime, ¿vienes a robarme, a matarme o—espera—acaso traes ron?\n Porque si no traes ron, amigo mío, tenemos un problema... un problema grande. 🍻🏴‍☠️", "¡Vaya, vaya! Si es que los buenos piratas no necesitan invitación...\nEspero que hayas traído ron, porque si no, tendré que considerar seriamente si seguir dejándote con vida... ¡Ja! ¡Es broma! (O tal vez no...) 🍻🏴‍☠️"}},
+};
+
+// Forward declarations
+class Persona;
+class ExplorationManager;
+// First class definition
+class ExplorationManager {
+private:
+    Persona* persona;
+public:
+    ExplorationManager(Persona* p) : persona(p) {}
+    template<typename Iterator>
+    void exploreZone(string& reason, string& site, Iterator& it, Persona& person);
 };
 
 // Persona en una isla desierta
@@ -31,6 +43,7 @@ class Persona {
     // Atributos privados
    private:
     string nombre;
+    ExplorationManager* explorationManager;
     int tiempoEnIsla = 0;
     int vida = 100;
     int hambre = 0;
@@ -41,6 +54,7 @@ class Persona {
    public:
     // Constructor
     Persona(string nombre, int vida) {
+         explorationManager = new ExplorationManager(this);
         this->nombre = nombre;
         this->vida = vida;
     }
@@ -72,6 +86,10 @@ class Persona {
 
     string getSite() {
         return site;
+    }
+
+    ExplorationManager* getExplorationManager() {
+        return explorationManager;
     }
 
     // Setters
@@ -115,6 +133,11 @@ class Persona {
         this->site = site;
     }
 
+    void setExplorationManager(ExplorationManager* explorationManager) {
+        this->explorationManager = explorationManager;
+    }
+
+    // Métodos
     void showStatus() {
         if (hambre <= 50)
             cout << "Tienes mucha hambre" << "\n";
@@ -147,6 +170,54 @@ class Persona {
     }
 };
 
+// Clase de utilidades
+class Utils {
+   public:
+    static void printGreen(const string& text) {
+        cout << "\033[1;32m" << text << "\033[0m" << "\n";
+        cout.flush();
+    }
+
+    static void printRed(const string& text) {
+        cout << "\033[1;31m" << text << "\033[0m" << "\n";
+    };
+
+    static void showLoading(int duration) {
+        cout << "\nCargando";
+        for (int i = 0; i <= duration; ++i) {
+            int percentage = (i * 100) / duration;
+            cout << "\r\033[1;32mCargando " << percentage << "%\033[0m" << flush;
+            this_thread::sleep_for(chrono::milliseconds(300));
+        }
+        cout << "\n";
+    }
+
+    static void showMenu(Persona& person, string site) {
+        system("clear");
+        Utils::printGreen("Vida " + to_string(person.getVida()) + " Tiempo en la isla " + to_string(person.getTiempoEnIsla()) + "/10");
+        Utils::printGreen("Hambre " + to_string(person.getHambre()) + " Sed " + to_string(person.getSed()));
+        Utils::printGreen("Refugio " + string(person.getRefugio() ? "Construido" : "No construido") + " en " + site);
+
+        cout << "\n---------------------------------" << "\n";
+        cout << "Que deseas hacer?" << "\n";
+        cout << "1. Buscar comida" << "\n";
+        cout << "2. Buscar agua" << "\n";
+        cout << "3. Construir refugio" << "\n";
+        cout << "4. Explorar" << "\n";
+        cout << "---------------------------------" << "\n";
+    }
+
+    // Configuración inicial para añadir finales alternativos y no repetir códigp
+    static void initialConfiguration() {
+        explore_site["Cementerio pirata"] = explore_site["Casa pirata"];
+        explore_site["Zona helada"] = explore_site["Zona desierta"];
+        explore_site["Bosque"] = explore_site["Cueva"];
+        explore_site["Ciudad abandonada"] = explore_site["Volcan"];
+        explore_site["Bodega"] = explore_site["Montaña"];
+    }
+};
+
+// Clase para generar números aleatorios
 class Random {
    public:
     static bool randomNothing(int destino) {
@@ -176,59 +247,78 @@ class Random {
     }
 };
 
-class Utils {
-   public:
-    static void printGreen(const string& text) {
-        cout << "\033[1;32m" << text << "\033[0m" << "\n";
-        cout.flush();
-    }
-
-    static void printRed(const string& text) {
-        cout << "\033[1;31m" << text << "\033[0m" << "\n";
-    };
-
-    static void showLoading(int duration) {
-        cout << "\nCargando";
-        for (int i = 1; i <= duration; ++i) {
-            int percentage = (i * 100) / duration;
-            string line = "\rCargando " + to_string(percentage) + "%";
-            printGreen(line);
-            sleep(1);
+template<typename Iterator>
+void ExplorationManager::exploreZone(string& reason, string& site,  Iterator& it, Persona& person) {
+        if(reason == "paracaidas" || site == "lancha"){
+            Utils::printGreen("Lo ves todo demasiado borroso devido a la bebida, no puedes explorar");
+            return;
         }
-        cout << "\n";
-    }
 
-    static void showMenu(Persona person, string site) {
-        system("clear");
-        Utils::printGreen("Vida " + to_string(person.getVida()) + " Tiempo en la isla " + to_string(person.getTiempoEnIsla()) + "/10");
-        Utils::printGreen("Hambre " + to_string(person.getHambre()) + " Sed " + to_string(person.getSed()));
-        Utils::printGreen("Refugio " + string(person.getRefugio() ? "Construido" : "No construido") + " en " + site);
-
-        cout << "\n---------------------------------" << "\n";
-        cout << "Que deseas hacer?" << "\n";
-        cout << "1. Buscar comida" << "\n";
-        cout << "2. Buscar agua" << "\n";
-        cout << "3. Construir refugio" << "\n";
-        cout << "4. Explorar" << "\n";
-        cout << "---------------------------------" << "\n";
+        // Mostramos el mensaje según el sitio y la persona que seas
+        if (site == "Casa pirata" || site == "Cementerio pirata") {
+            if (reason == "pirata !Jack Sparrow¡") {
+                cout << it->second.first << "\n";
+                Utils::printRed("Parece que tuviste problemas con los piratas en tu accidente");
+                Utils::printRed("HAS SIDO ASESINADO POR... ¡Jack Sparrow! 🏴‍☠️");
+                person.setVida(0);
+            } else {
+                cout << it->second.second << "\n";
+                Utils::printGreen("HAS SIDO RESCATADO POR... ¡Jack Sparrow! 🏴‍☠️");
+                person.setVida(100);
+                person.setTiempoEnIsla(10);
+            }
+        } else if (site == "Zona desierta" || site == "Zona helada") {
+            if(person.getRefugio()){
+                Utils::printGreen(it->second.first);
+                Utils::printGreen("Tanta caminata te ha dejado exhausto, parece que no has encontrado nada util, dormiras en tu refugio y recuperaras vida");
+                person.setVida(person.getVida() + 20);
+            } else {
+                Utils::printRed(it->second.second);
+                Utils::printRed("Tanta caminata te ha dejado exhausto, parece que no has encontrado nada util, dormiras en la intemperie y perderás vida");
+                person.setVida(person.getVida() - 10);
+            }
+        } else if (site == "Cueva" || site == "Bosque") {
+            if(rand() % 2){
+                Utils::printGreen(it->second.first);
+                person.setVida(person.getVida() + 20);
+                person.setHambre(person.getHambre() + 20);
+            } else {
+                Utils::printGreen(it->second.second);
+                person.setRefugio(true);
+            }
+        } else if (site == "Montaña" || site == "Bodega") {
+            if(rand() % 2){
+                Utils::printGreen(it->second.first);
+                person.setVida(person.getVida() + 20);
+                person.setSed(person.getSed() + 20);    
+                person.setHambre(person.getHambre() + 20);
+                person.setRefugio(true);
+            } else {
+                Utils::printGreen(it->second.second);
+            }
+        } else if (site == "Volcan" || site == "Ciudad abandonada") {
+            if(rand() % 2){
+                Utils::printGreen(it->second.first);
+                person.setVida(100);
+                person.setTiempoEnIsla(10);
+            } else {
+                Utils::printRed(it->second.first);
+                person.setVida(0);
+                person.setTiempoEnIsla(10);
+            }
+        } else{
+            Utils::printRed("Parece ser que el programador no es muy avisapado y algo se le ha escapado");
+            Utils::printGreen("Ganas 10 de vida por la confusión, abre una issue en el repositorio para que lo arreglen");
+            person.setVida(person.getVida() + 10);
+        }
     }
-
-    // Configuración inicial para añadir finales alternativos y no repetir códigp
-    static void initialConfiguration() {
-        explore_site["Cementerio pirata"] = explore_site["Casa pirata"];
-        explore_site["Zona helada"] = explore_site["Zona desierta"];
-        explore_site["Bosque"] = explore_site["Cueva"];
-        explore_site["Ciudad abandonada"] = explore_site["Volcan"];
-        explore_site["Bodega"] = explore_site["Montaña"];
-    }
-};
 
 bool solve(Persona person, string reason) {
     cout << "---------------------------------" << "\n";
     cout << "Bienvenido a la isla desierta " << person.getNombre() << "\n";
     cout << "Estas aqui devido a un problema con un " << reason << "\n";
-    cout << "Tu vida es de " << person.getVida() << "%" << "\n";
-    Utils::showLoading(10);
+    cout << "Tu vida es de " << person.getVida() << "\n";
+    Utils::showLoading(30);
     cout << "---------------------------------" << "\n";
 
     while (person.getVida() > 0 && person.getTiempoEnIsla() < 10) {
@@ -282,28 +372,16 @@ bool solve(Persona person, string reason) {
             }
             case '4': {
                 cout << "Explorando..." << "\n";
+                sleep(1);
                 // TODO: Implementar la exploración de la isla
-
+                // Obtenemos un sitio aleatorio
                 auto it = next(begin(explore_site), rand() % explore_site.size());
-                string site = it->first;
+                string site = it->first; // Nombre del sitio
                 person.setSite(site);
 
-                if (site == "Casa pirata" || site == "Cementerio pirata") {
-                    if (reason == "pirata !Jack Sparrow¡") {
-                        cout << it->second.first << "\n";
-                        Utils::printRed("HAS SIDO ASESINADO POR... ¡Jack Sparrow! 🏴‍☠️");
-                        return false;
-                    } else {
-                        cout << it->second.second << "\n";
-                        Utils::printGreen("HAS SIDO RESCATADO POR... ¡Jack Sparrow! 🏴‍☠️");
-                        return false;
-                    }
-                } else if (site == "Zona desierta" || site == "Zona helada") {
-                } else if (site == "Cueva" || site == "Bosque") {
-                } else if (site == "Montaña" || site == "Bodega") {
-                } else if (site == "Volcán" || site == "Ciudad abandonada") {
-                }
+                cout<<"Encontraste un "<<site<<"\n";
 
+                person.getExplorationManager()->exploreZone(reason, site, it, person);
                 break;
             }
             default: {
