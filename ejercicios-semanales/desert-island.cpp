@@ -7,16 +7,16 @@ using namespace std;
 
 // Razones por las que la persona esta en la isla, par de recursos que se pueden encontrar { comida, bebida }
 map<string, pair<string, string>> reasons_why = {
-    {"avion", {"humanos", "sangre"}},
+    {"avión", {"humanos", "sangre"}},
     {"naufragio", {"ardilla", "agua de arce"}},
-    {"helicoptero", {"pescado", "cocos"}},
+    {"helicóptero", {"pescado", "cocos"}},
     {"paracaidas", {"pescado", "wisky"}},
     {"submarino", {"manta raya", "agua de manantial"}},
     {"lancha", {"pescado", "vodka"}},
     {"bote", {"salmón", "zumo"}},
-    {"kayak", {"mero", "nada"}},
-    {"PESCADOR EMBRUJADO", {"pescado fantasma", "nada"}},
-    {"pirata !Jack Sparrow¡", {"megalodon", "mezcla de ron con cerbeza pirata"}},
+    {"kayak", {"mero", "... mejor no saber que es eso"}},
+    {"PESCADOR EMBRUJADO", {"pescado fantasma", "agua de charco"}},
+    {"pirata !Jack Sparrow¡", {"megalodon", "mezcla de ron con cerveza pirata"}},
 };
 
 // Persona en una isla desierta
@@ -100,7 +100,6 @@ class Persona {
     }
 
     void showStatus() {
-        cout << "\n";
         if (hambre <= 50)
             cout << "Tienes mucha hambre" << "\n";
         if (sed <= 50)
@@ -129,6 +128,35 @@ class Persona {
         setVida(this->vida - (count_bad * 10));
         // Aumentar la vida
         setVida(this->vida + (count_good * 10));
+    }
+};
+
+class Random {
+   public:
+    static bool randomNothing(int destino) {
+        if (destino < 1 || destino > 5) {
+            Utils::printRed("Te crees muy gracioso... pero no lo eres, el destino no te dará nada");
+            return false;
+        } else {
+            int random_number = (rand() % 5) + 1;
+            Utils::printGreen("Destino " + to_string(random_number));
+            return random_number != destino;
+        }
+    }
+
+    static int getDestino() {
+        // El usuario selecionará un número al azar entre 1 y 10, al igual que la máquina si es el mismo número, entonces no encontró nada
+        cout << "Elije un numero entre [1, 5] que determinara tu destino: ";
+        int destino;
+        cin >> destino;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore();
+            destino = -1;
+        }
+
+        return destino;
     }
 };
 
@@ -179,49 +207,62 @@ bool solve(Persona person, string reason) {
     cout << "---------------------------------" << "\n";
     string site = "Playa";
 
-    while (person.getVida() > 0 && person.getTiempoEnIsla() <= 10) {
+    while (person.getVida() > 0 && person.getTiempoEnIsla() < 10) {
         Utils::showMenu(person, site);
 
-        int option;
+        char option;
         cin >> option;
 
         switch (option) {
-            case 1: {
+            case '1': {
                 cout << "Buscando comida..." << "\n";
                 sleep(1);
-                cout << "Encontraste " << reasons_why[reason].first << "\n";
-                person.setHambre(person.getHambre() + rand() % 50 + 20);
+
+                // Obtenemos nuestro destino
+                int destino = Random::getDestino();
+                if (!Random::randomNothing(destino)) {
+                    Utils::printRed("No encontraste nada\n");
+                } else {
+                    // Si no coincide encontrará algo pr lo que subimos sus stats de hambre entre 20 y 50
+                    Utils::printGreen("Encontraste " + reasons_why[reason].first + "\n");
+                    person.setHambre(person.getHambre() + rand() % 50 + 20);
+                }
                 break;
             }
-            case 2: {
+            case '2': {
                 cout << "Buscando bebida..." << "\n";
                 sleep(1);
-                string selected = reasons_why[reason].second;
 
-                cout << "Encontraste " << selected << "\n";
-                if (selected == "nada")
-                    cout << "Tu sed sigue insaciable" << "\n";
-                else
+                // Obtenemos nuestro destino
+                int destino = Random::getDestino();
+                if (!Random::randomNothing(destino)) {
+                    Utils::printRed("No encontraste nada\n");
+                } else {
+                    // Si no coincide encontrará algo pr lo que subimos sus stats de sed entre 20 y 50
+                    Utils::printGreen("Encontraste " + reasons_why[reason].second + "\n");
                     person.setSed(person.getSed() + rand() % 50 + 20);
+                }
                 break;
             }
-            case 3: {
+            case '3': {
+                // Verificamos si ya tiene un refugio para constuirlo o no
                 if (person.getRefugio()) {
-                    cout << "Ya tienes un refugio" << "\n";
+                    Utils::printRed("Ya tienes un refugio\n");
                 } else {
-                    cout << "Construyendo refugio" << "\n";
+                    cout << "Construyendo refugio en la " << site << "...\n";
                     sleep(1);
-                    cout << "Refugio construido" << "\n";
+                    Utils::printGreen("Refugio construido\n");
                     person.setRefugio(true);
                 }
                 break;
             }
-            case 4: {
-                cout << "Explorando" << "\n";
+            case '4': {
+                cout << "Explorando..." << "\n";
+                // TODO: Implementar exploración
                 break;
             }
             default: {
-                cout << "Opcion invalida" << "\n";
+                Utils::printRed("Opcion invalida");
                 break;
             }
         }
@@ -229,12 +270,15 @@ bool solve(Persona person, string reason) {
         person.timePass();    // Pasa el tiempo en la isla las stads de hambre y sed disminuyen
         person.showStatus();  // Verifica el estado de la persona
 
-        cout << "Presiona cualquier tecla para continuar" << "\n";
+        cout << "\nPresiona cualquier tecla para continuar" << "\n";
         cin.ignore();
         cin.get();
     }
 
+    system("clear");
+    cout << "---------------------------------\n";
     (person.getVida() <= 0) ? Utils::printRed("HAS MUERTO") : Utils::printGreen("HAS SIDO RESCATADO");
+    cout << "---------------------------------\n";
     return false;
 }
 
