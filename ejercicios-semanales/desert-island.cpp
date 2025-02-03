@@ -8,15 +8,22 @@ using namespace std;
 // Razones por las que la persona esta en la isla, par de recursos que se pueden encontrar { comida, bebida }
 map<string, pair<string, string>> reasons_why = {
     {"avión", {"humanos", "sangre"}},
-    {"naufragio", {"ardilla", "agua de arce"}},
+    {"naufragio", {"ardilla", "agua de árbol arce"}},
     {"helicóptero", {"pescado", "cocos"}},
     {"paracaidas", {"pescado", "wisky"}},
-    {"submarino", {"manta raya", "agua de manantial"}},
+    {"submarino", {"manta raya", ".. mejor no saber que es eso"}},
     {"lancha", {"pescado", "vodka"}},
     {"bote", {"salmón", "zumo"}},
-    {"kayak", {"mero", "... mejor no saber que es eso"}},
     {"PESCADOR EMBRUJADO", {"pescado fantasma", "agua de charco"}},
     {"pirata !Jack Sparrow¡", {"megalodon", "mezcla de ron con cerveza pirata"}},
+};
+// Sitios para explorar
+map<string, pair<string, string>> explore_site = {
+    {"Zona desierta", {"Menos mal que tienes un refugio", "Desgraciadamente no tienes un refugio"}},
+    {"Cueva", {"Wow esta cueva está llena de comida", "Genial me he cansado para nada"}},
+    {"Montaña", {"Wow esta montaña tiene mucha bebida extraña", "Genial me he cansado para nada"}},
+    {"Volcán", {"Nada bueno puede salir de esto", "Genial me he cansado para nada"}},
+    {"Casa pirata", {"¡Ohh, qué sorpresa! Un invitado no invitado...\n  Ahora dime, ¿vienes a robarme, a matarme o—espera—acaso traes ron?\n Porque si no traes ron, amigo mío, tenemos un problema... un problema grande. 🍻🏴‍☠️", "¡Vaya, vaya! Si es que los buenos piratas no necesitan invitación... Espero que hayas traído ron, porque si no, tendré que considerar seriamente si seguir dejándote con vida... ¡Ja! ¡Es broma! (O tal vez no...) 🍻🏴‍☠️"}},
 };
 
 // Persona en una isla desierta
@@ -28,6 +35,7 @@ class Persona {
     int vida = 100;
     int hambre = 0;
     int sed = 0;
+    string site = "Playa";
     bool refugio = false;
 
    public:
@@ -60,6 +68,10 @@ class Persona {
 
     bool getRefugio() {
         return refugio;
+    }
+
+    string getSite() {
+        return site;
     }
 
     // Setters
@@ -97,6 +109,10 @@ class Persona {
 
     void setRefugio(bool refugio) {
         this->refugio = refugio;
+    }
+
+    void setSite(string site) {
+        this->site = site;
     }
 
     void showStatus() {
@@ -196,6 +212,15 @@ class Utils {
         cout << "4. Explorar" << "\n";
         cout << "---------------------------------" << "\n";
     }
+
+    // Configuración inicial para añadir finales alternativos y no repetir códigp
+    static void initialConfiguration() {
+        explore_site["Cementerio pirata"] = explore_site["Casa pirata"];
+        explore_site["Zona helada"] = explore_site["Zona desierta"];
+        explore_site["Bosque"] = explore_site["Cueva"];
+        explore_site["Ciudad abandonada"] = explore_site["Volcan"];
+        explore_site["Bodega"] = explore_site["Montaña"];
+    }
 };
 
 bool solve(Persona person, string reason) {
@@ -205,10 +230,9 @@ bool solve(Persona person, string reason) {
     cout << "Tu vida es de " << person.getVida() << "%" << "\n";
     Utils::showLoading(10);
     cout << "---------------------------------" << "\n";
-    string site = "Playa";
 
     while (person.getVida() > 0 && person.getTiempoEnIsla() < 10) {
-        Utils::showMenu(person, site);
+        Utils::showMenu(person, person.getSite());
 
         char option;
         cin >> option;
@@ -249,7 +273,7 @@ bool solve(Persona person, string reason) {
                 if (person.getRefugio()) {
                     Utils::printRed("Ya tienes un refugio\n");
                 } else {
-                    cout << "Construyendo refugio en la " << site << "...\n";
+                    cout << "Construyendo refugio en la " << person.getSite() << "...\n";
                     sleep(1);
                     Utils::printGreen("Refugio construido\n");
                     person.setRefugio(true);
@@ -258,7 +282,28 @@ bool solve(Persona person, string reason) {
             }
             case '4': {
                 cout << "Explorando..." << "\n";
-                // TODO: Implementar exploración
+                // TODO: Implementar la exploración de la isla
+
+                auto it = next(begin(explore_site), rand() % explore_site.size());
+                string site = it->first;
+                person.setSite(site);
+
+                if (site == "Casa pirata" || site == "Cementerio pirata") {
+                    if (reason == "pirata !Jack Sparrow¡") {
+                        cout << it->second.first << "\n";
+                        Utils::printRed("HAS SIDO ASESINADO POR... ¡Jack Sparrow! 🏴‍☠️");
+                        return false;
+                    } else {
+                        cout << it->second.second << "\n";
+                        Utils::printGreen("HAS SIDO RESCATADO POR... ¡Jack Sparrow! 🏴‍☠️");
+                        return false;
+                    }
+                } else if (site == "Zona desierta" || site == "Zona helada") {
+                } else if (site == "Cueva" || site == "Bosque") {
+                } else if (site == "Montaña" || site == "Bodega") {
+                } else if (site == "Volcán" || site == "Ciudad abandonada") {
+                }
+
                 break;
             }
             default: {
@@ -283,6 +328,7 @@ bool solve(Persona person, string reason) {
 }
 
 int main() {
+    Utils::initialConfiguration();
     system("clear");
     srand(time(0));
     // Determina si el juego continua
