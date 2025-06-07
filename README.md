@@ -1,10 +1,10 @@
-# 📂 Bytes Colaborativos
+# 🤖 Bytes Colaborativos
 
-**Bienvenidos al repositorio de Bytes Colaborativos**
+**Bienvenidos al repositorio de un inegrante de Bytes Colaborativos**
 
 Este es el espacio donde compartimos todos los **ejercicios y proyectos** propuestos en nuestra comunidad. Aquí encontrarás soluciones, retos y material para mejorar tus habilidades en **Java** y otras tecnologías.
 
-## Sobre Nosotros
+## Sobre la comunidad
 
 Somos una comunidad de programadores apasionados por **Java**, dedicada a compartir conocimientos, resolver dudas y crecer juntos en el mundo del desarrollo.
 
