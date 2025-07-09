@@ -1,7 +1,9 @@
 #include <bits/stdc++.h>
+#include <unistd.h>
+
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include <cmath>
 
 using namespace std;
 using ss = pair<string, string>;
@@ -31,13 +33,14 @@ map<string, ss> explore_site = {
 class Persona;
 class ExplorationManager;
 class ExplorationManager {
-// Referencia a la persona
-private:
+    // Referencia a la persona
+   private:
     Persona* persona;
-public:
-// Constructor y método para explorar la zona de la isla
+
+   public:
+    // Constructor y método para explorar la zona de la isla
     ExplorationManager(Persona* p) : persona(p) {}
-    template<typename Iterator>
+    template <typename Iterator>
     void exploreZone(string& reason, string& site, Iterator& it, Persona& person);
 };
 
@@ -45,14 +48,14 @@ public:
 class Persona {
     // Atributos privados, nombre, referenicia a su explorationManager, tiempo en la isla, vida, hambre, sed, sitio, refugio
    private:
-    string nombre; // Nombre de la persona
-    ExplorationManager* explorationManager; // Referencia a la clase de exploración para explorar zonas
-    int vida; // Vida de la persona
-    int tiempoEnIsla = 0; // Tiempo en la isla sio se llega a 10 se acaba el juego
-    int hambre = 0; // Hambre de la persona
-    int sed = 0; // Sed de la persona
-    string site = "Playa"; // Sitio donde se encuentra la persona
-    bool refugio = false; // Si tiene un refugio o no
+    string nombre;                           // Nombre de la persona
+    ExplorationManager* explorationManager;  // Referencia a la clase de exploración para explorar zonas
+    int vida;                                // Vida de la persona
+    int tiempoEnIsla = 0;                    // Tiempo en la isla sio se llega a 10 se acaba el juego
+    int hambre = 0;                          // Hambre de la persona
+    int sed = 0;                             // Sed de la persona
+    string site = "Playa";                   // Sitio donde se encuentra la persona
+    bool refugio = false;                    // Si tiene un refugio o no
 
    public:
     // Constructor
@@ -156,9 +159,9 @@ class Persona {
 
         // Calcular su estado de vida
         int count_bad = 0, count_good = 0;
-        (!refugio) ? count_bad++ : count_good++; // Si tienes refugio ganas vida si no la pierdes porqué pasas frio o la comodidad te da vitalidad
-        (this->sed < 50) ? count_bad++ : count_good++; // Si tienes sed pierdes vida si no, la ganas
-        (this->hambre < 50) ? count_bad++ : count_good++; // Si tienes hambre pierdes vida si no, la ganas
+        (!refugio) ? count_bad++ : count_good++;           // Si tienes refugio ganas vida si no la pierdes porqué pasas frio o la comodidad te da vitalidad
+        (this->sed < 50) ? count_bad++ : count_good++;     // Si tienes sed pierdes vida si no, la ganas
+        (this->hambre < 50) ? count_bad++ : count_good++;  // Si tienes hambre pierdes vida si no, la ganas
 
         // Disminuir 10 a la vida por cada cosa mala
         setVida(this->vida - (count_bad * 10));
@@ -170,7 +173,7 @@ class Persona {
 // Clase de utilidades
 class Utils {
    public:
-   // Pinta de verde la salida por consola
+    // Pinta de verde la salida por consola
     static void printGreen(const string& text) {
         cout << "\033[1;32m" << text << "\033[0m" << "\n";
         cout.flush();
@@ -207,7 +210,7 @@ class Utils {
     // Configuración inicial para añadir finales alternativos y no repetir códigp
     static void initialConfiguration() {
         // Ej, de tipo Cementerio pirata ocurrira lo mismo si es una casa pirata
-        explore_site["Cementerio pirata"] = explore_site["Casa pirata"]; 
+        explore_site["Cementerio pirata"] = explore_site["Casa pirata"];
         explore_site["Zona helada"] = explore_site["Zona desierta"];
         explore_site["Bosque"] = explore_site["Cueva"];
         explore_site["Ciudad abandonada"] = explore_site["Volcan"];
@@ -218,7 +221,7 @@ class Utils {
 // Clase para generar números aleatorios
 class Random {
    public:
-   // Comprueba si el destino es el mismo que el número aleatorio
+    // Comprueba si el destino es el mismo que el número aleatorio
     static bool checkDestination(int destino) {
         if (destino < 1 || destino > 5) {
             Utils::printRed("Te crees muy gracioso... pero no lo eres, el destino no te dará nada");
@@ -246,10 +249,10 @@ class Random {
 };
 
 // Explora la zona de la isla
-template<typename Iterator>
-void ExplorationManager::exploreZone(string& reason, string& site,  Iterator& it, Persona& person) {
+template <typename Iterator>
+void ExplorationManager::exploreZone(string& reason, string& site, Iterator& it, Persona& person) {
     // Si la razón es paracaidas o el sitio es lancha, no podrá explorar ya que estubo bebiendo alcohol
-    if(reason == "paracaidas" || site == "lancha"){
+    if (reason == "paracaidas" || site == "lancha") {
         Utils::printGreen("Lo ves todo demasiado borroso devido a la bebida, no puedes explorar");
         return;
     }
@@ -271,7 +274,7 @@ void ExplorationManager::exploreZone(string& reason, string& site,  Iterator& it
         person.setHambre(100);
         person.setSed(100);
     } else if (site == "Zona desierta" || site == "Zona helada") {
-        if(person.getRefugio()){
+        if (person.getRefugio()) {
             Utils::printGreen(it->second.first);
             Utils::printGreen("Tanta caminata te ha dejado exhausto, parece que no has encontrado nada util, dormiras en tu refugio y recuperaras vida");
             person.setVida(person.getVida() + 20);
@@ -281,7 +284,7 @@ void ExplorationManager::exploreZone(string& reason, string& site,  Iterator& it
             person.setVida(person.getVida() - 10);
         }
     } else if (site == "Cueva" || site == "Bosque") {
-        if(rand() % 2){
+        if (rand() % 2) {
             Utils::printGreen(it->second.first);
             person.setVida(person.getVida() + 20);
             person.setHambre(person.getHambre() + 20);
@@ -290,17 +293,17 @@ void ExplorationManager::exploreZone(string& reason, string& site,  Iterator& it
             person.setRefugio(true);
         }
     } else if (site == "Montaña" || site == "Bodega") {
-        if(rand() % 2){
+        if (rand() % 2) {
             Utils::printGreen(it->second.first);
             person.setVida(person.getVida() + 20);
-            person.setSed(person.getSed() + 20);    
+            person.setSed(person.getSed() + 20);
             person.setHambre(person.getHambre() + 20);
             person.setRefugio(true);
         } else {
             Utils::printGreen(it->second.second);
         }
     } else if (site == "Volcan" || site == "Ciudad abandonada") {
-        if(rand() % 2){
+        if (rand() % 2) {
             Utils::printGreen(it->second.first);
             person.setVida(100);
         } else {
@@ -311,7 +314,7 @@ void ExplorationManager::exploreZone(string& reason, string& site,  Iterator& it
         person.setRefugio(true);
         person.setHambre(100);
         person.setSed(100);
-    } else{
+    } else {
         Utils::printRed("Parece ser que el programador no es muy avisapado y algo se le ha escapado");
         Utils::printGreen("Ganas 10 de vida por la confusión, abre una issue en el repositorio para que lo arreglen");
         person.setVida(person.getVida() + 10);
@@ -331,9 +334,9 @@ bool solve(Persona person, string reason) {
     while (person.getVida() > 0 && person.getTiempoEnIsla() < 10) {
         Utils::showMenu(person, person.getSite());
         // Último dia
-        if(person.getTiempoEnIsla() == 9)
+        if (person.getTiempoEnIsla() == 9)
             Utils::printGreen("Escuchas el sonido de un helicoptero, puede que te rescaten pronto");
-        
+
         char option;
         cin >> option;
 
@@ -385,10 +388,10 @@ bool solve(Persona person, string reason) {
                 // TODO: Implementar la exploración de la isla
                 // Obtenemos un sitio aleatorio
                 auto it = next(begin(explore_site), rand() % explore_site.size());
-                string site = it->first; // Nombre del sitio
+                string site = it->first;  // Nombre del sitio
                 person.setSite(site);
 
-                cout<<"Encontraste un "<<site<<"\n";
+                cout << "Encontraste un " << site << "\n";
 
                 person.getExplorationManager()->exploreZone(reason, site, it, person);
                 break;
