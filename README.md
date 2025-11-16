@@ -1,6 +1,6 @@
 # 🤖 Bytes Colaborativos
 
-**Bienvenidos al repositorio de un inegrante de Bytes Colaborativos**
+**Bienvenidos al repositorio de un integrante de Bytes Colaborativos**
 
 Este es el espacio donde compartimos todos los **ejercicios y proyectos** propuestos en nuestra comunidad. Aquí encontrarás soluciones, retos y material para mejorar tus habilidades en **Java** y otras tecnologías.
 
@@ -13,7 +13,7 @@ Los fundadores de esta iniciativa son **Chanti** y **Jorge**, quienes impulsan e
 ## Contenido del Repositorio
 
 🔹 **ejercicios-semanales**: Problemas y retos de programación.  
-🔹 **proyectos-colaborativos**: Propuestas de desarrollo colaborativo.
+🔹 **web**: Código fuente del sitio web de Bytes Colaborativos, donde se muestran los resultados de todos los concursos.
 
 ## Únete a los Directos
 

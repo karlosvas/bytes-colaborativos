@@ -1,8 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [],
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'roboto-slab': ['Roboto Slab', 'serif'],
+      },
+    },
   },
   plugins: [],
 }

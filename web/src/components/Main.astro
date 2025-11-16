@@ -5,11 +5,11 @@ import Winner from "../components/Winner.astro";
 ---
 
 <main
-  class="h-auto w-full bg-gradient-to-b from-black via-gray-800 to-gray-900 flex flex-col items-center justify-center p-20"
+  class="h-auto w-full bg-gradient-to-b from-black via-gray-800 to-gray-900 flex flex-col items-center justify-center"
 >
-  <div class="max-w-[450px] md:max-w-3xl m-3">
-    <Winner />
+  <div class="max-w-[450px] md:max-w-3xl m-3 p-5">
     <About />
-    <Projects />
+    <Winner />
   </div>
+  <Projects />
 </main>

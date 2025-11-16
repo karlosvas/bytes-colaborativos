@@ -1,19 +1,108 @@
 ---
 import GradiantTitle from "../layouts/GradiantTitle.astro";
+
+const projects = [
+  {
+    title: "Ordering System",
+    subtitle: "ordering-system",
+  },
+  {
+    title: "Coworking Space",
+    subtitle: "coworking-space",
+  },
+  {
+    title: "Listado Tareas",
+    subtitle: "listado-tareas",
+  },
+  {
+    title: "Bytes Tournament",
+    subtitle: "bytes-tournament",
+  },
+  {
+    title: "Feature Flag API",
+    subtitle: "feature-flag-api",
+  },
+];
 ---
 
-<GradiantTitle>Echa un vistazo a los&nbsp;proyectos</GradiantTitle>
-<div class="flex flex-row flex-wrap items-center place-content-center justify-center">
-  <a href="https://github.com/karlosvas/ordering-system" target="_blank">
-    <img src="ordering-system.png" alt="" class="m-3 max-w-[450px] md:max-w-xl cursor-pointer" />
-  </a>
-  <a href="https://github.com/karlosvas/coworking-space" target="_blank">
-    <img src="coworking-space.png" alt="" class="m-3 max-w-[450px] md:max-w-xl cursor-pointer" />
-  </a>
-  <a href="https://github.com/karlosvas/proyectoviernes-grupo-05.git" target="_blank">
-    <img src="listado-tareas.png" alt="" class="m-3 max-w-[450px] md:max-w-xl cursor-pointer" />
-  </a>
-  <a href="https://github.com/karlosvas/bytes-tournament" target="_blank">
-    <img src="bytes-tournament.png" alt="" class="m-3 max-w-[450px] md:max-w-xl w-2xl cursor-pointer" />
-  </a>
-</div>
+<section class="pb-20">
+  <GradiantTitle>Echa un vistazo a los&nbsp;proyectos</GradiantTitle>
+  <div class="parent">
+    {
+      projects.map((project) => (
+        <div class={`div${projects.indexOf(project) + 1}  bg-gray-950 p-4`}>
+          <a href={`https://github.com/karlosvas/${project.subtitle}`} target="_blank">
+            <img src={`${project.subtitle}.webp`} alt={project.title} class="project-img" />
+          </a>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .parent {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .project-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 8px;
+  }
+
+  .project-img:hover {
+    transform: scale(1.02);
+  }
+
+  .div1,
+  .div3,
+  .div4,
+  .div5,
+  .div6 {
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  @media (min-width: 768px) {
+    .parent {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, minmax(250px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .div1 {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+    }
+
+    .div3 {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+    }
+
+    .div4 {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
+    }
+
+    .div5 {
+      grid-column: 2 / 3;
+      grid-row: 2 / 3;
+    }
+
+    .div6 {
+      grid-column: 1 / 2;
+      grid-row: 3 / 4;
+    }
+  }
+</style>
